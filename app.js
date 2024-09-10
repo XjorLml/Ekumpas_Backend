@@ -5,8 +5,11 @@ const userRouter = require('./routers/user_router');
 const app = express();
 
 app.use(body_parser.json());
-
 app.use('/', userRouter);
 
-module.exports = app;
+// Add this route to return "Backend server running" in the browser
+app.get('/', (req, res) => {
+    res.send('Backend server running');
+});
 
+module.exports = app;
