@@ -6,5 +6,5 @@ const port = 3000;
 
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is working http://192.168.1.107:${port}`);
+    console.log(`Server is working localhost:${port}`);
   });

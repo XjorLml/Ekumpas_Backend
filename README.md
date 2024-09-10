@@ -1,2 +1,2 @@
-# Ekumpas_Mobile_Backend
-Backend for Ekumpas Mobile App
+# Ekumpas_Backend
+Mobile App Backend for Ekumpas
