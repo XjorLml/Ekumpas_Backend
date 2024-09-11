@@ -2,17 +2,24 @@ const UserServices = require('../services/user_services');
 
 exports.register = async (req, res, next) => {
   try {
-      console.log("---req body---", req.body);
-      const { email, password } = req.body;
-      const duplicate = await UserServices.getUserByEmail(email);
-      if (duplicate) {
-          throw new Error(`UserName ${email}, Already Registered`)
-      }
-      const response = await UserServices.registerUser(email, password);
-      res.json({ status: true, success: 'User registered successfully' });
+    console.log("---req body---", req.body);
+    const { email, password } = req.body;
+
+    // Simple validation
+    if (!email || !password) {
+      return res.status(400).json({ status: false, message: 'Email and password are required' });
+    }
+
+    const duplicate = await UserServices.getUserByEmail(email);
+    if (duplicate) {
+      return res.status(409).json({ status: false, message: `Email ${email} is already registered` });
+    }
+
+    await UserServices.registerUser(email, password);
+    res.status(201).json({ status: true, message: 'User registered successfully' });
   } catch (err) {
-      console.log("---> err -->", err);
-      next(err);
+    console.log("---> err -->", err);
+    res.status(500).json({ status: false, message: 'Server error: ' + err.message });
   }
 }
 
