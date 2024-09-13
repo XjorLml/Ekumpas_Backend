@@ -1,34 +1,46 @@
 const UserModel = require('../model/user.model');
 const jwt = require('jsonwebtoken');
 
-class UserServices{
+class UserServices {
  
-    static async registerUser(email,password){
-        try{
-                console.log("-----Email --- Password-----",email,password);
-                
-                const createUser = new UserModel({email,password});
-                return await createUser.save();
-        }catch(err){
+    static async registerUser(email, password) {
+        try {
+            console.log("-----Email --- Password-----", email, password);
+            
+            const createUser = new UserModel({ email, password });
+            return await createUser.save();
+        } catch (err) {
             throw err;
         }
     }
-    static async getUserByEmail(email){
-        try{
-            return await UserModel.findOne({email});
-        }catch(err){
+
+    static async getUserByEmail(email) {
+        try {
+            return await UserModel.findOne({ email });
+        } catch (err) {
             console.log(err);
         }
     }
-    static async checkUser(email){
+
+    static async checkUser(email) {
         try {
-            return await UserModel.findOne({email});
+            return await UserModel.findOne({ email });
         } catch (error) {
             throw error;
         }
     }
-    static async generateAccessToken(tokenData,JWTSecret_Key,JWT_EXPIRE){
+
+    static async generateAccessToken(tokenData, JWTSecret_Key, JWT_EXPIRE) {
         return jwt.sign(tokenData, JWTSecret_Key, { expiresIn: JWT_EXPIRE });
     }
+
+    static async markUserAsVerified(email) {
+        try {
+            return await UserModel.updateOne({ email }, { isVerified: true });
+        } catch (error) {
+            throw new Error('Error updating user verification status: ' + error.message);
+        }
+    }
 }
+
 module.exports = UserServices;
