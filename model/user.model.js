@@ -7,33 +7,48 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   role: { 
     type: String, 
-    default: 'user' },
-    
-      email: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-          validator: (email) => {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            return emailRegex.test(email);
-          },
-          message: 'Invalid email format',
-        },
-      },
+    default: 'user' 
+  },
 
-      password: {
-        type: String,
-        required: true,
-        minlength: 8,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (email) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
       },
-    username: {
+      message: 'Invalid email format',
+    },
+  },
+
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+  },
+
+  username: {
     type: String,
     unique: true
   },
 
-},{timestamps:true});
+  // OTP for email verification
+  otp: {
+    type: String,
+    required: false,
+  },
 
+  // Track whether the user is verified
+  isVerified: {
+    type: Boolean,
+    default: false,
+  }
+
+}, {timestamps:true});
+
+// Hashing password before saving the user
 userSchema.pre('save', async function(next) {
   try {
     const user = this;
@@ -48,6 +63,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+// Method to compare entered password with hashed password
 userSchema.methods.comparePassword = async function(candidatePassword) {
   try {
     if (!candidatePassword) return false;
@@ -57,7 +73,6 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
     throw error;
   }
 };
-
 
 const UserModel = db.model('MobileUser', userSchema);
 

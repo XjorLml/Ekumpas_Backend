@@ -1,9 +1,13 @@
+require ('dotenv').config();
 const mongoose = require('mongoose');
 
-const connection = mongoose.createConnection('mongodb+srv://admin:powerpupbois@cluster0.uriyxxs.mongodb.net/ekumpas?retryWrites=true&w=majority&appName=Cluster0').on('open', () => {
-    console.log("Mongodb Connected");
-}).on('error', () => {
-    console.log("Connection Error");
-});
+const connection = mongoose.createConnection(process.env.DB_URI)
+  .on('open', () => {
+    
+    console.log("MongoDB Connected");
+  })
+  .on('error', (err) => {
+    console.error("Connection Error:", err);
+  });
 
 module.exports = connection;
