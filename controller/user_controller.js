@@ -114,14 +114,32 @@ exports.requestPasswordReset = async (req, res, next) => {
   }
 };
 
+// Verify the OTP (only OTP verification)
 exports.verifyPasswordResetOTP = async (req, res, next) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const { email, otp } = req.body;
 
     // Check if the OTP matches
     const isValidOTP = await OTPService.verifyOTP(email, otp);
     if (!isValidOTP) {
       return res.status(400).json({ status: false, message: 'Invalid or expired OTP' });
+    }
+
+    res.status(200).json({ status: true, message: 'OTP verified successfully. Proceed to reset password.' });
+  } catch (err) {
+    console.log("---> err -->", err);
+    res.status(500).json({ status: false, message: 'Server error: ' + err.message });
+  }
+};
+
+// Set new password after OTP verification
+exports.setNewPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    // Ensure email and newPassword are provided
+    if (!email || !newPassword) {
+      return res.status(400).json({ status: false, message: 'Email and new password are required' });
     }
 
     // Reset the user's password
@@ -133,3 +151,4 @@ exports.verifyPasswordResetOTP = async (req, res, next) => {
     res.status(500).json({ status: false, message: 'Server error: ' + err.message });
   }
 };
+

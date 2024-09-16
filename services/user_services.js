@@ -8,7 +8,11 @@ class UserServices {
         try {
             console.log("-----Email --- Password-----", email, password);
             
-            const createUser = new UserModel({ email, password });
+            // Hash password before saving
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            const createUser = new UserModel({ email, password: hashedPassword });
             return await createUser.save();
         } catch (err) {
             throw err;
@@ -42,6 +46,7 @@ class UserServices {
             throw new Error('Error updating user verification status: ' + error.message);
         }
     }
+
     static async resetPassword(email, newPassword) {
         try {
             const salt = await bcrypt.genSalt(10);
@@ -51,7 +56,6 @@ class UserServices {
             throw new Error('Error resetting password: ' + error.message);
         }
     }
-    
 }
 
 module.exports = UserServices;
