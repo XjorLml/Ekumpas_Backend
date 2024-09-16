@@ -1,5 +1,6 @@
 const UserModel = require('../model/user.model');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 class UserServices {
  
@@ -41,6 +42,16 @@ class UserServices {
             throw new Error('Error updating user verification status: ' + error.message);
         }
     }
+    static async resetPassword(email, newPassword) {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+            return await UserModel.updateOne({ email }, { password: hashedPassword });
+        } catch (error) {
+            throw new Error('Error resetting password: ' + error.message);
+        }
+    }
+    
 }
 
 module.exports = UserServices;

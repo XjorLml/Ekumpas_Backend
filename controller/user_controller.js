@@ -86,3 +86,50 @@ exports.login = async (req, res, next) => {
     res.status(500).json({ status: false, error: 'Internal server error', details: error.message });
   }
 };
+
+exports.requestPasswordReset = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Check if email exists in the database
+    const user = await UserServices.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ status: false, message: 'Email not found' });
+    }
+
+    // Generate OTP for password reset
+    const otp = OTPService.generateOTP();
+    await OTPService.saveOTP(email, otp);
+
+    // Send OTP email to the user
+    await OTPService.sendOTPEmail(email, otp, 'password reset');
+
+    res.status(200).json({
+      status: true,
+      message: 'An OTP has been sent to your email for password reset.',
+    });
+  } catch (err) {
+    console.log("---> err -->", err);
+    res.status(500).json({ status: false, message: 'Server error: ' + err.message });
+  }
+};
+
+exports.verifyPasswordResetOTP = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    // Check if the OTP matches
+    const isValidOTP = await OTPService.verifyOTP(email, otp);
+    if (!isValidOTP) {
+      return res.status(400).json({ status: false, message: 'Invalid or expired OTP' });
+    }
+
+    // Reset the user's password
+    await UserServices.resetPassword(email, newPassword);
+
+    res.status(200).json({ status: true, message: 'Password reset successfully' });
+  } catch (err) {
+    console.log("---> err -->", err);
+    res.status(500).json({ status: false, message: 'Server error: ' + err.message });
+  }
+};
