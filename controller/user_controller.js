@@ -71,6 +71,11 @@ exports.login = async (req, res, next) => {
       return res.status(404).json({ status: false, error: 'User does not exist' });
     }
 
+    // Check if user is verified
+    if (!user.isVerified) {
+      return res.status(403).json({ status: false, error: 'User is not verified. Please check your email for verification instructions.' });
+    }
+
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
       return res.status(401).json({ status: false, error: 'Invalid email or password' });
