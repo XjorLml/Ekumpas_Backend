@@ -73,7 +73,7 @@ exports.login = async (req, res, next) => {
 
     // Check if user is verified
     if (!user.isVerified) {
-      return res.status(403).json({ status: false, error: 'User is not verified. Please check your email for verification instructions.' });
+      return res.status(403).json({ status: false, error: 'User is not verified. Please check your email.' });
     }
 
     const isPasswordCorrect = await user.comparePassword(password);
