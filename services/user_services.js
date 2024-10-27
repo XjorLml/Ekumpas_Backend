@@ -1,18 +1,14 @@
 const UserModel = require('../model/user.model');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 
 class UserServices {
- 
+
     static async registerUser(email, password) {
         try {
             console.log("-----Email --- Password-----", email, password);
-            
-            // Hash password before saving
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
 
-            const createUser = new UserModel({ email, password: hashedPassword });
+            // No manual hashing here; the pre-save hook in userModel.js will handle it
+            const createUser = new UserModel({ email, password });
             return await createUser.save();
         } catch (err) {
             throw err;
