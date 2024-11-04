@@ -3,7 +3,6 @@ const OTPService = require('../services/otp_services'); // Ensure this service h
 
 exports.register = async (req, res, next) => {
     try {
-        console.log("---req body---", req.body);
         const { email, password } = req.body;
 
         // Simple validation
