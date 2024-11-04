@@ -49,21 +49,31 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 // Hashing password before saving the user
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
     try {
         const user = this;
         if (!user.isModified('password')) return next();
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
+        const hashpass = await bcrypt.hash(user.password, salt);
+        user.password = hashpass;
+        user.username = user.email.split('@')[0];
         next();
     } catch (error) {
-        next(error);
+        throw error;
     }
 });
 
-// Method to compare passwords
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
+// Method to compare entered password with hashed password
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    try {
+        if (!candidatePassword) return false;
+        const isMatch = await bcrypt.compare(candidatePassword, this.password);
+        return isMatch;
+    } catch (error) {
+        throw error;
+    }
 };
 
-module.exports = mongoose.model('User', userSchema);
+const UserModel = db.model('MobileUser', userSchema);
+
+module.exports = UserModel;

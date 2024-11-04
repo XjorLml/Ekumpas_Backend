@@ -3,9 +3,12 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); // Import bcrypt
 
 class UserServices {
+
     static async registerUser(email, password) {
         try {
             console.log("-----Email --- Password-----", email, password);
+
+            // No manual hashing here; the pre-save hook in userModel.js will handle it
             const createUser = new UserModel({ email, password });
             return await createUser.save();
         } catch (err) {
