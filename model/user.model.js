@@ -9,6 +9,10 @@ const userSchema = new Schema({
         type: String,
         default: 'user'
     },
+    level: {
+        type: Number,
+        default: '1'
+    },
 
     email: {
         type: String,
