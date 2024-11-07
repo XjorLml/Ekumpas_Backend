@@ -81,7 +81,7 @@ exports.login = async (req, res, next) => {
         }
 
         // Creating Token
-        const tokenData = { _id: user._id, email: user.email };
+        const tokenData = { _id: user._id, email: user.email, level: user.level};
         const token = await UserServices.generateAccessToken(tokenData, "secret", "1h");
 
         res.status(200).json({ status: true, success: 'Login successful', token: token });
